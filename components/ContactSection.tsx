@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { useState } from 'react';
-import ActionModal from '@/components/ActionModal';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function ContactSection() {
   const { ref, inView } = useInView({
@@ -21,13 +21,34 @@ export default function ContactSection() {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  const triggerToast = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = setTimeout(() => {
+      setShowToast(false);
+    }, 2800);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setFeedback('');
 
     try {
       const response = await fetch(`${apiBase}/api/leads`, {
@@ -42,12 +63,12 @@ export default function ContactSection() {
         throw new Error('Failed to submit inquiry');
       }
 
-      setFeedback('Thank you. Our team will contact you shortly.');
-      setShowModal(true);
+      triggerToast('Inquiry submitted. Our team will contact you shortly.');
       setFormData({ name: '', email: '', company: '', inquiryType: 'leasing', message: '' });
     } catch (error) {
-      setFeedback('Unable to submit right now. Please try again.');
+      triggerToast('Unable to submit right now. Please try again.');
     } finally {
+      setFormData({ name: '', email: '', company: '', inquiryType: 'leasing', message: '' });
       setIsSubmitting(false);
     }
   };
@@ -217,16 +238,17 @@ export default function ContactSection() {
             >
               {isSubmitting ? 'Sending...' : 'Send Inquiry'}
             </motion.button>
-            {feedback ? <p className="text-sm text-gray-300">{feedback}</p> : null}
           </motion.form>
         </div>
       </div>
-      <ActionModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Inquiry Submitted"
-        message="Thank you. Our team has received your request and will contact you shortly."
-      />
+      {isMounted && showToast
+        ? createPortal(
+          <div className="fixed bottom-6 right-4 z-[220] w-[calc(100%-2rem)] max-w-sm rounded-lg border border-mall-gold/40 bg-black/90 px-4 py-3 text-sm text-white shadow-2xl backdrop-blur-md md:w-auto md:right-6">
+            {toastMessage}
+          </div>,
+          document.body,
+        )
+        : null}
     </section>
   );
 }
