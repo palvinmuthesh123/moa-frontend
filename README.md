@@ -67,12 +67,12 @@ cd ../mall-sales-deck-backend
 npm install
 npm run start:dev
 ```
-Backend default: `http://localhost:4000`
+Backend default: `https://moa-backend-meq8.onrender.com`
 
 ### Frontend env
 Create `.env.local` in frontend root:
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://moa-backend-meq8.onrender.com
 ```
 
 ## Build & Validation

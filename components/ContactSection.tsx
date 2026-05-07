@@ -11,7 +11,7 @@ export default function ContactSection() {
     threshold: 0.2,
     triggerOnce: true,
   });
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://moa-backend-meq8.onrender.com';
 
   const [formData, setFormData] = useState({
     name: '',
