@@ -2,13 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { useState } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 
 export default function Hero() {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: false });
-  const [videoLoaded] = useState(true);
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.22], [0, -90]);
   const heroRotateX = useTransform(scrollYProgress, [0, 0.22], [0, 8]);
@@ -20,21 +18,18 @@ export default function Hero() {
     >
       {/* Cinematic Video Background */}
       <div className="absolute inset-0 overflow-hidden z-0">
-        {/* YouTube autoplay iframe – muted + loop for cinematic effect */}
-        <iframe
-          className="absolute w-[177.77vh] min-w-full h-[56.25vw] min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          src="https://www.youtube.com/embed/Z-0Zp7xcaM0?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&playlist=Z-0Zp7xcaM0&modestbranding=1&iv_load_policy=3&disablekb=1"
-          title="Mall of America cinematic tour"
-          allow="autoplay; encrypted-media"
-          loading="lazy"
-          style={{ border: 'none', pointerEvents: 'none' }}
-        />
-        {/* Fallback high-res image shown until/if video fails */}
-        <img
-          src="https://commons.wikimedia.org/wiki/Special:FilePath/Mall_of_America-2005-05-29.jpg"
-          alt="Mall of America interior"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-25' : 'opacity-100'}`}
-        />
+        <video
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          disablePictureInPicture
+        >
+          <source src="https://videos.pexels.com/video-files/853889/853889-hd_1920_1080_25fps.mp4" type="video/mp4" />
+        </video>
         {/* Cinematic gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
@@ -43,7 +38,7 @@ export default function Hero() {
       {/* Hero Content */}
       <motion.div
         style={{ y: heroY, rotateX: heroRotateX }}
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center depth-stage"
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 w-full text-center depth-stage"
       >
         {/* Badge */}
         <motion.div

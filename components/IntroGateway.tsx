@@ -14,10 +14,10 @@ export default function IntroGateway({ children }: IntroGatewayProps) {
   const [showEnter, setShowEnter] = useState(false);
   const [shutterActive, setShutterActive] = useState(false);
   const [introVideoSrc, setIntroVideoSrc] = useState(
-    'https://videos.pexels.com/video-files/3255275/3255275-hd_1920_1080_25fps.mp4',
+    '/videos/intro.mp4',
   );
   const [storyVideoSrc, setStoryVideoSrc] = useState(
-    'https://videos.pexels.com/video-files/853889/853889-hd_1920_1080_25fps.mp4',
+    '/videos/story.mp4',
   );
   const shutterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
